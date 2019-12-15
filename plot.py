@@ -11,7 +11,15 @@ class Plot(object):
     def __init__(self):
         pass
     
-    def plot_data_lists(self, y_list, x_list, label_list, length=10, height=6, x_label='x', y_label='y', label_fsize=14, save=True, figure_name='temp'):
+    def plot_data_lists(self, y_list, x_list, legend_list, 
+                        title, 
+                        figure_name, 
+                        xlabel, 
+                        ylabel, 
+                        length, 
+                        height, 
+                        label_fsize, 
+                        plotArg_list):
         '''
         data_list: 数据列表
         label_list: label列表
@@ -20,30 +28,26 @@ class Plot(object):
         import matplotlib.pyplot as plt
         # if save:
         #     matplotlib.use('PDF')
-        startTime = datetime.datetime.now()
+        # startTime = datetime.datetime.now()
         fig, ax = plt.subplots(figsize=(length, height))
         ax.grid(True)
 
-        for y, x,  label in zip(y_list, x_list, label_list):
-            ax.plot(x,y, label=label) 
+        # color_list = plotArgs['colorList']
+        # lineStyle_list = plotArgs['lineStyleList']
+        # marker_list = plotArgs['markerList']
+        for x, y, legend, plotArg in zip(x_list, y_list, legend_list, plotArg_list):
+            ax.plot(x,y, label=legend, **plotArg) 
         # 图线主要是这三个属性：linestyle, color, marker。更多信息：https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.plot.html
         # markers = ['o', 'p', 'v', 's', 'D']
 
         # ax.plot()
-        ax.set_xlabel(x_label, fontsize=label_fsize)
-        ax.set_ylabel(y_label, fontsize=label_fsize)
+        ax.set_xlabel(xlabel, fontsize=label_fsize)
+        ax.set_ylabel(ylabel, fontsize=label_fsize)
+        ax.set_title(title)
         ax.legend()
         ax.grid(True)
-        
-        plt.savefig(figure_name + str(startTime.strftime('_%m_%d_%H_%M'))+'.pdf')
-        plt.show()
-
-        # if save:
-        #     plt.savefig(figure_name)
-        # else:
-        #     plt.show()
-
-
+        plt.savefig(figure_name)
+        plt.close('all') # 关闭figure
 
 
 # def plot_regrets():
