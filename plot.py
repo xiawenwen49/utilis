@@ -9,6 +9,7 @@ import datetime
 
 class Plot(object):
     def __init__(self):
+
         pass
     
     def plot_data_lists(self, y_list, x_list, legend_list, 
@@ -49,6 +50,23 @@ class Plot(object):
         ax.grid(True)
         plt.savefig(figure_name)
         plt.close('all') # 关闭figure
+
+    def plot_fill_var(self, y_list, std_list, x_list, legend_list, title, xlabel, ylabel, plotArg_list, figure_name):
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots()
+        ax.grid(True)
+        for x, y, std, legend, plotArg in zip(x_list, y_list, std_list, legend_list, plotArg_list):
+            ax.plot(x,y, label=legend, color=plotArg['color']) 
+            ax.fill_between(x, y+std, y-std, facecolor=plotArg['facecolor'], alpha=0.4)
+        
+        ax.legend(loc='upper left')
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        # plt.show()
+        plt.savefig(figure_name)
+        plt.close('all')
+        pass
 
 
 # if __name__ == "__main__":
