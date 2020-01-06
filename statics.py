@@ -7,9 +7,6 @@ import glob
 import plot
 
 
-def mean_var():
-    pass
-
 def save_csv_data(filename, data_dict):
     df = pd.DataFrame(data_dict)
     df.to_csv(filename)
@@ -21,36 +18,70 @@ def load_csv_data(filename, key):
 
  
 def find_files():
-    files = glob.glob("/home/xiawenwen/workspace/IMFB-KDD2019-master/SimulationResults/nonlinear_1557/reward/*.csv")
+    # files1 = glob.glob("/home/xiawenwen/workspace/IMFB-KDD2019-master/SimulationResults/linear_1440/reward/*12_31*IMGUCB_IMFB.csv")
+    # files2 = glob.glob("/home/xiawenwen/workspace/IMFB-KDD2019-master/SimulationResults/linear_1440/reward/*12_30*LinUCB_egreedy_0.1_UCB1.csv")
+    # files1.extend(files2)
+    files1 = glob.glob("/home/xiawenwen/workspace/IMFB-KDD2019-master/SimulationResults/linear_1613/loss/*.csv")
+    files = files1
+    # figure_name = 'reward_linear_Flickr.pdf'
+    figure_name = 'loss_linear_0_20_NetHEPT.pdf'
+    
     imgucb_mat = []
     imfb_mat = []
+    imlinucb_mat = []
+    egreedy_mat = []
+    ucb1_mat = []
+
+
     for f in files:
-        # print(f)
         df = pd.read_csv(f)
-        imgucb_mat.append(df['IMGUCB'])
-        imfb_mat.append(df['IMFB'])
-    imgucb_mat = np.array(imgucb_mat)
-    imfb_mat = np.array(imfb_mat)
+        if df.get('IMGUCB', None) is not None:
+            imgucb_mat.append(df['IMGUCB'])
+        if df.get('IMFB', None) is not None:
+            imfb_mat.append(df['IMFB'])
+        if df.get('LinUCB', None) is not None:
+            imlinucb_mat.append(df['LinUCB'])
+        if df.get('egreedy_0.1', None) is not None:
+            egreedy_mat.append(df['egreedy_0.1'])
+        if df.get('UCB1', None) is not None:
+            ucb1_mat.append(df['UCB1'])
+    
+    data_list = []
+    if len(imgucb_mat) != 0:
+        data_list.append(imgucb_mat)
+    if len(imfb_mat) != 0:
+        data_list.append(imfb_mat)
+    if len(imlinucb_mat) != 0:
+        data_list.append(imlinucb_mat)
+    if len(egreedy_mat) != 0:
+        data_list.append(egreedy_mat)
+    if len(ucb1_mat) != 0:
+        data_list.append(ucb1_mat)
+    
+    data_list = list(map(lambda x:np.array(x), data_list))
 
-    imgucb_mean = np.mean(imgucb_mat, axis=0)
-    imgucb_std = np.sqrt( np.var(imgucb_mat, axis=0) )
+    y_list = list(map(lambda x:np.mean(x, axis=0), data_list))
+    std_list = list(map(lambda x:np.sqrt(np.var(x, axis=0)), data_list))
 
-    imfb_mean = np.mean(imfb_mat, axis=0)
-    imfb_std = np.sqrt( np.var(imfb_mat, axis=0) )
+    num = len(y_list[0])
+    x_list = [range(1, num+1) for i in y_list]
+#  {'color':'green'}, {'color':'cyan'}, {'color':'magenta'},
+    plotArg_list=[{'color': 'red', 'facecolor': 'red'},
+                    {'color': 'blue', 'facecolor': 'blue'},
+                    {'color': 'green', 'facecolor': 'green'},
+                    {'color': 'cyan', 'facecolor': 'cyan'},
+                    {'color': 'magenta', 'facecolor': 'magenta'},
+                    ]
 
-    figure_name = 'reward_1557.pdf'
+    
     p = plot.Plot()
-    p.plot_fill_var([imgucb_mean, imfb_mean], [imgucb_std, imfb_std], [range(1, len(imgucb_mean)+1), range(1, len(imgucb_mean)+1)],
-                    legend_list=['IMGUCB', 'IMFB'], 
+    p.plot_fill_var(y_list, std_list, x_list,
+                    legend_list=['IMGUCB', 'IMFB', 'IMLinUCB', '$\epsilon$-greedy', 'CUCB'], 
                     title='Reward', 
                     xlabel='Round', 
                     ylabel='Reward', 
-                    plotArg_list=[{'color': 'red', 'facecolor': 'red'},
-                    {'color': 'blue', 'facecolor': 'blue'}],
+                    plotArg_list=plotArg_list,
                     figure_name=figure_name)
-
-
-    print(imgucb_mat.shape, imfb_mat.shape)
 
 
 if __name__ == "__main__":

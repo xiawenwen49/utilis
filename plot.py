@@ -60,9 +60,11 @@ class Plot(object):
             ax.plot(x,y, label=legend, color=plotArg['color']) 
             ax.fill_between(x, y+std, y-std, facecolor=plotArg['facecolor'], alpha=0.4)
         
-        ax.legend(loc='upper left')
+        ax.legend(fontsize=7)
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
+        # ax.set_ylim(0, 0.6)
+        ax.set_ylim(0, 0.2)
         # plt.show()
         plt.savefig(figure_name)
         plt.close('all')
